@@ -1,5 +1,6 @@
 --- 
 title: hack.lu 2011 CTF -- Unknown Planet -- writeup
+author: zed
 ---
 
 h1. 0. original image file

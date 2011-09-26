@@ -14,10 +14,14 @@
 #   because “*” matches zero or more characters.
 
 preprocess do
+  members = YAML::load_file 'members.yml'
   @items.each do |item|
     if item.identifier =~ /^\/\d{4}-\d{2}-\d{2}-/
       item[:kind] = 'article' 
       item[:created_at] = item.identifier[/\d{4}-\d{2}-\d{2}/]
+      if item[:author] && members[item[:author]]
+        item[:author_url] = members[item[:author]]['url']
+      end
     end
   end
 end

@@ -14,19 +14,19 @@
     <div id="container">
         <div id="container-inner">
 
-
             <div id="header">
-    <div id="header-inner">
-        <div id="header-content">
+              <div id="header-inner">
+                <div id="header-content">
 
+                  <div id="header-name"><a href="/" accesskey="1">Lobotomy Team</a></div>
+                  <div id="header-description"></div>
 
-            <div id="header-name"><a href="/" accesskey="1">Lobotomy</a></div>
-            <div id="header-description"></div>
+                </div>
 
-        </div>
-    </div>
-</div>
-
+              </div>
+              <div id="header-logo1"></div>
+              <div id="header-logo2"></div>
+            </div>
 
 
             <div id="content">
@@ -44,7 +44,7 @@
                                   <% if item[:author] && item[:created_at] %>
                                         <span class="byline">
 
-                                          By <span class="vcard author"><a class="fn url" href="AUTHOR_URL">AUTHOR_NAME</a></span> on <abbr class="published"><%= item[:created_at] %></abbr>
+                                        By <span class="vcard author"><a class="fn url" href="<%= item[:author_url] %>"><%=  item[:author] %></a></span> on <abbr class="published"><%= item[:created_at] %></abbr>
 
                                         </span>
                                   <% end %>
