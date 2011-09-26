@@ -1,1 +1,6 @@
-see Rakefile
+Lobotomy Team
+-------------
+
+* сайт статический
+* see Rakefile
+* выкатываться сайт будет по ssh ключам
