@@ -1,0 +1,155 @@
+--- 
+title: hack.lu 2011 CTF -- Unknown Planet -- writeup
+---
+
+h1. 0. original image file
+
+!https://github.com/zed-0xff/ctf/raw/master/2011.hacklu/200.unknown.planet+/0_8c4f14e28155a2c3cf4b2538c1e0958b.jpg!
+
+h1. 1. analyzing image
+
+all JPEGs have special EOF marker *@FF D9@* and no data must be after this marker.
+
+bc. #!ruby
+[zed@zmac 200.unknown.planet+]#irb -E binary
+ruby-1.9.2-p290 :004 > data=File.read '0_8c4f14e28155a2c3cf4b2538c1e0958b.jpg'; data.size
+ => 194420 
+ruby-1.9.2-p290 :005 > data.split("\xff\xd9").map(&:size)
+ => [192405, 2013] 
+
+so, we can see that there's *2013* spare bytes after EOF marker.
+
+bc. #!ruby
+File.open('foo','w'){ |f| f<< data.split("\xff\xd9").last }
+ => #<File:foo (closed)> 
+ruby-1.9.2-p290 :007 > ^D
+
+bc. [zed@zmac 200.unknown.planet+]#file foo
+foo: Zip archive data, at least v2.0 to extract
+
+AHA! It's a zip! :)
+
+h1. 2. unzipping
+
+bc.. [zed@zmac 200.unknown.planet+]#unzip foo 
+Archive:  foo
+  inflating: 5IIUED7GheR             
+  inflating: 6JXtwsTTh9k             
+  inflating: 87F1s5POUJc             
+  inflating: BPiIOASG_Z6             
+  inflating: nLPA8X0UJqf             
+  inflating: rySOWi4fZkA             
+  inflating: uvlSlG3Tgow             
+  inflating: Uw105aD3qYh             
+  inflating: Yui5oq58hlx    
+
+
+[zed@zmac 200.unknown.planet+]#ls -la
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 5IIUED7GheR
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 6JXtwsTTh9k
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 87F1s5POUJc
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 BPiIOASG_Z6
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 Uw105aD3qYh
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 Yui5oq58hlx
+-rw-r--r--@  1 zed  staff   1324 Apr 25 16:45 nLPA8X0UJqf
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 rySOWi4fZkA
+-rw-r--r--@  1 zed  staff  20000 Apr 25 16:45 uvlSlG3Tgow
+
+[zed@zmac 200.unknown.planet+]#file *
+5IIUED7GheR: data
+6JXtwsTTh9k: data
+87F1s5POUJc: 8086 relocatable (Microsoft)
+BPiIOASG_Z6: data
+Uw105aD3qYh: data
+Yui5oq58hlx: data
+nLPA8X0UJqf: 8086 relocatable (Microsoft)
+rySOWi4fZkA: data
+uvlSlG3Tgow: RIFF (little-endian) data, WAVE audio, Microsoft PCM, 8 bit, mono 8000 Hz
+
+p. Looks like audio file, that was split in chunks of 20000 bytes each. 
+*@uvlSlG3Tgow@* is a first chunk b/c it has a RIFF WAVE header.
+*@nLPA8X0UJqf@* is a last tail chunk b/c it's size less than 20000.
+
+h1. 3. gluing waves
+
+importing files in Audacity (or any other sound editor) discovers that source file is supposed to be a "Morse":http://en.wikipedia.org/wiki/Morse_code - coded message. But we must find a correct order of chunks.
+So, morse code consists of @dots@ and @dashes@. Each kind must have fixed length.
+We suppose that source file was generated programmatically, not recorder from line or mic. So, it's timings must be perfect.
+Following tool helps to manually find a correct chunks order.
+
+bc.. #!ruby
+#!/usr/bin/env ruby
+STDOUT.sync = true
+
+if ARGV.size == 0
+  raise "gimme at least one chunk filename"
+end
+
+b0 = "\x80"*8
+b1 = "\x27\x01\x27\x80\xd9\xff\xd9\x80"
+
+data = ARGV.map{ |x| File.read(x) }.join.force_encoding('binary')
+if data[0,4] == 'RIFF'
+  data = data[44..-1]
+end
+
+N=120
+
+b0 = b0*N
+b1 = b1*N
+
+r = ''
+0.step(data.size-1,b0.size) do |i|
+  case (d=data[i,b0.size])
+  when b0
+    print "."
+    r << '0'
+  when b1
+    print "#"
+    r << '1'
+  else
+    raise "SYNC ERROR" if d.size == b0.size
+    raise "NOT ENOUGH DATA #{d.size}/#{b0.size}"
+    raise "unknown #{d.size} (normal: #{b0.size}) bytes of data #{d.split('').map{|x| "%02x " % x.ord}.join}"
+  end
+end
+
+p. calling with a single chunk - script says that it needs more data (more chunks):
+
+bc. #!ruby
+[zed@zmac 1]#./2_manually_guess_chunk_order.rb uvlSlG3Tgow 
+##..######..######.../2_manually_guess_chunk_order.rb:32:in `block in <main>': NOT ENOUGH DATA 756/960
+
+calling with wrong 2nd chunk => @SYNC ERROR@:
+
+bc. #!ruby
+[zed@zmac 1]#./2_manually_guess_chunk_order.rb uvlSlG3Tgow 6JXtwsTTh9k 
+##..######..######..###./2_manually_guess_chunk_order.rb:31:in `block in <main>': SYNC ERROR 
+
+two chunks in correct order, script says it needs more chunks:
+
+bc. #!ruby
+[zed@zmac 1]#./2_manually_guess_chunk_order.rb uvlSlG3Tgow 5IIUED7GheR 
+##..######..######..##......##..##..##..#./2_manually_guess_chunk_order.rb:32:in `block in <main>': NOT ENOUGH DATA 596/960 
+
+all chunks in correct order:
+
+bc. #!ruby
+[zed@zmac 1]#./2_manually_guess_chunk_order.rb uvlSlG3Tgow 5IIUED7GheR rySOWi4fZkA 87F1s5POUJc 6JXtwsTTh9k Uw105aD3qYh BPiIOASG_Z6 Yui5oq58hlx nLPA8X0UJqf 
+##..######..######..##......##..##..##..##......##......##..##......######..##..######......######..##..######..######......######..######..######......##..##..##......
+
+h1. 4. decoding Morse
+
+we'll need a "ruby morse gem":http://rubygems.org/gems/morse. install it with "*@gem install morse@*"
+
+bc. #!ruby
+[zed@zmac 200.unknown.planet+]#irb
+ruby-1.9.2-p290 :001 > r='##..######..######..##......##..##..##..##......##......##..##......######..##..######......######..##..######..######......######..######..######......##..##..##......'
+ruby-1.9.2-p290 :002 > require 'morse'
+ => true 
+ruby-1.9.2-p290 :005 > puts Morse.decode(r.gsub('......'," ").gsub('######','-').gsub('.','').gsub('##','.'))
+PHEIKYOS
+
+Voila! "*Pheikyos*" is the answer. Case-sensitive.
+
+p{color:gray}. PS: all source & data files are available at my ["{color:gray}.ctf github repo":https://github.com/zed-0xff/ctf/tree/master/2011.hacklu/200.unknown.planet+].

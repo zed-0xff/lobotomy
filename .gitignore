@@ -1,0 +1,6 @@
+output/*
+tmp/*
+*.swp
+*.tmp
+.DS_Store
+*.orig

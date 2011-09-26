@@ -1,0 +1,10 @@
+/* contains various fixes, must be last css included */
+
+body {
+    background-color: #525252;
+}
+
+div#alpha-inner, div.entry-asset {
+    overflow:visible;
+}
+
