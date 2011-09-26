@@ -40,14 +40,15 @@
                           <% if item[:title] %>
                                 <div class="asset-header">
                                   <h1 id="page-title" class="asset-name entry-title"><%= item[:title] %></h1>
-                                    <div class="asset-meta">
+                                  <div class="asset-meta">
+                                  <% if item[:author] && item[:created_at] %>
                                         <span class="byline">
 
                                           By <span class="vcard author"><a class="fn url" href="AUTHOR_URL">AUTHOR_NAME</a></span> on <abbr class="published"><%= item[:created_at] %></abbr>
 
                                         </span>
-
-                                    </div>
+                                  <% end %>
+                                  </div>
                                 </div>
                           <% end %>
                                 <div class="asset-content entry-content">
@@ -115,7 +116,7 @@
         <h3 class="widget-header">Pages</h3>
         <div class="widget-content">
             <ul>
-                <li class="page page-61"><a href="../../about.html">About us</a></li>
+                <li class="page"><a href="/about">About us</a></li>
             </ul>
         </div>
     </div>

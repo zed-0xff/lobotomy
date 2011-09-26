@@ -37,7 +37,7 @@ compile '*' do
       when 'markdown'
         filter :kramdown
       when 'md'
-        filter :rdiscount
+        filter :kramdown
       when 'haml'
         filter :haml
       when 'textile'
