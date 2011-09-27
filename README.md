@@ -7,6 +7,10 @@ Lobotomy Team
 
 ---
 
+а для более лучшего дизайна нужен более лучший дизайнер
+
+---
+
 * сайт статический
 * платформа [nanoc](http://nanoc.stoneship.org/docs/1-introduction/)
 * выкатывается по ssh ключам
