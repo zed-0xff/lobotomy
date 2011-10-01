@@ -23,7 +23,8 @@ end
 
 desc "deploy to server"
 task :deploy => :compile do
-  system "scp -r output/* zed.0xff.me:/apps/lobotomy/"
+#  system "scp -r output/* zed.0xff.me:/apps/lobotomy/"
+  system "rsync -avz output/ lobotomy.me:/vz/private-names/web/var/www/lobotomy.me"
 end
 
 namespace :posts do
