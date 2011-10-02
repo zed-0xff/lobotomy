@@ -36,10 +36,17 @@ namespace :posts do
         print "Post title: "
         $stdin.gets.chomp.strip
       end
+    format = ENV['format'] ||
+      begin
+        print "Post format (md,textile,html,erb) (default: md) : "
+        $stdin.gets.chomp.strip
+      end
+    format.strip!
+    format = 'md' if format.empty?
     name = title.gsub(/\s+/, '-')
     name = name.gsub(/[^a-zA-Z0-9_-]/, "").downcase
     time = Time.now.strftime("%Y-%m-%d")
-    fname = "content/#{time}-#{name}.md"
+    fname = "content/#{time}-#{name}.#{format}"
     raise "#{fname} already exists!" if File.exist?(fname)
     File.open(fname, "w+") do |file|
       file.puts({'title' => title, 'author' => ENV['USER']}.to_yaml + "---")
