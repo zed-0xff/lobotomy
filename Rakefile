@@ -31,21 +31,26 @@ namespace :posts do
   desc "Create a new blog post"
   task :new do
     require 'yaml'
+
     title = ENV['title'] ||
       begin
         print "Post title: "
         $stdin.gets.chomp.strip
       end
+
     format = ENV['format'] ||
       begin
         print "Post format (md,textile,html,erb) (default: md) : "
         $stdin.gets.chomp.strip
       end
+
+    date = ENV['date'] ? Time.parse(ENV['date']) : Time.now
+
     format.strip!
     format = 'md' if format.empty?
     name = title.gsub(/\s+/, '-')
     name = name.gsub(/[^a-zA-Z0-9_-]/, "").downcase
-    time = Time.now.strftime("%Y-%m-%d")
+    time = date.strftime("%Y-%m-%d")
     fname = "content/#{time}-#{name}.#{format}"
     raise "#{fname} already exists!" if File.exist?(fname)
     File.open(fname, "w+") do |file|
