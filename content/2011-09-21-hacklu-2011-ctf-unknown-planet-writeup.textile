@@ -78,7 +78,7 @@ So, morse code consists of @dots@ and @dashes@. Each kind must have fixed length
 We suppose that source file was generated programmatically, not recorder from line or mic. So, it's timings must be perfect.
 Following tool helps to manually find a correct chunks order.
 
-bc.. #!ruby
+<pre><code>#!ruby
 #!/usr/bin/env ruby
 STDOUT.sync = true
 
@@ -114,6 +114,7 @@ r = ''
     raise "unknown #{d.size} (normal: #{b0.size}) bytes of data #{d.split('').map{|x| "%02x " % x.ord}.join}"
   end
 end
+</code></pre>
 
 p. calling with a single chunk - script says that it needs more data (more chunks):
 

@@ -14,11 +14,12 @@
 #   because “*” matches zero or more characters.
 
 preprocess do
+  prepare_nested_layouts layouts
   members = YAML::load_file 'members.yml'
   @items.each do |item|
     if item.identifier =~ /^\/\d{4}-\d{2}-\d{2}-/
       item[:kind] = 'article' 
-      item[:created_at] = item.identifier[/\d{4}-\d{2}-\d{2}/]
+      item[:created_at] = Time.parse(item.identifier[/\d{4}-\d{2}-\d{2}/])
       if item[:author] && members[item[:author]]
         item[:author_url] = members[item[:author]]['url']
       end
@@ -27,6 +28,10 @@ preprocess do
 end
 
 compile 'css/*' do
+  # don’t filter or layout
+end
+
+compile 'resource/*' do
   # don’t filter or layout
 end
 
@@ -49,13 +54,17 @@ compile '*' do
       else
         filter :erb
     end
-    filter :colorize_syntax, :coderay => { :wrap => :span }
-    layout 'default'
+    filter :zcolorize, :default_colorizer => :pygmentize
+    if item.identifier =~ %r!/\d{4}-\d{2}-\d{2}!
+      layout 'post'
+    else
+      layout 'default'
+    end
   end
 end
 
 route '*' do
-  if item.binary? || item.identifier['/css/']
+  if item.binary? || item.identifier['/css/'] || item.identifier['/resource/']
     # Write item with identifier /foo/ to /foo.ext
     item.identifier.chop + '.' + item[:extension]
   else

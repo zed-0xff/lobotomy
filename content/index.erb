@@ -1,0 +1,8 @@
+
+<h2>Everything</h2>
+
+<ul style="list-style:none; font-size: 120%">
+  <% sorted_articles.each do |article| %>
+    <li><%= article[:created_at].strftime("%Y-%m-%d") + ' ' + link_to(article[:title], article) %></li>
+  <% end %>
+</ul>

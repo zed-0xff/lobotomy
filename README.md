@@ -7,10 +7,6 @@ Lobotomy Team
 
 ---
 
-а для более лучшего дизайна нужен более лучший дизайнер
-
----
-
 * сайт статический
 * платформа [nanoc](http://nanoc.stoneship.org/docs/1-introduction/)
 * выкатывается по ssh ключам
@@ -18,3 +14,11 @@ Lobotomy Team
 * `rake deploy` - выкатывание сайта на сервер
 * `rake server` - запустить локальный сервер на 3000 порту
 * `rake` - скомпилировать контент из `/content` в html в `/output`
+* для раскраски кода **на клиенте** нужно установить [pygments](http://pygments.org/) 
+
+
+Credits
+========
+
+* http://nanoc.stoneship.org/
+* thanks to http://metaskills.net/ for design

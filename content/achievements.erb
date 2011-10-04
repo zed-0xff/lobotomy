@@ -1,0 +1,8 @@
+
+<h2>Achievements</h2>
+
+<ul style="list-style:none; font-size: 120%">
+  <% sorted_articles.find_all(&:achievement?).each do |article| %>
+    <%= achievement_li(article) %>
+  <% end %>
+</ul>

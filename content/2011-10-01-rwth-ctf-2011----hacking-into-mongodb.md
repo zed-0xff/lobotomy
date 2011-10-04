@@ -1,6 +1,8 @@
 --- 
 title: RWTH CTF 2011 -- hacking into mongodb
 author: zed
+categories:
+  - writeup
 ---
 
 # look at running process first:

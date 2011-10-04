@@ -1,0 +1,24 @@
+---
+layout: default
+---
+
+<article id="post">
+  <header>
+    <time pubdate datetime="<%= @item[:created_at].xmlschema %>">
+      <span class="day"><%= @item[:created_at].day %></span>
+      <span class="month"><%= @item[:created_at].strftime "%b" %></span>
+      <span class="year"><%= @item[:created_at].year %></span>
+    </time>
+    <h1><%= @item[:title] %></h1>
+  </header>
+  <%= yield %>
+  <footer>
+    <% if @item[:author] %>
+      <p class="author">// <%= link_to(@item[:author],@item[:author_url].to_s) %></p>
+    <% end %>
+  </footer>
+  <!--footer id="disqus_thread">
+    {% include disqus.html %}
+  </footer-->
+</article>
+

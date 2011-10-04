@@ -1,7 +1,7 @@
 .CodeRay {
   background-color: hsl(0,0%,95%);
   border: 1px solid silver;
-  color: black;
+  color: gray;
 }
 .CodeRay pre {
   margin: 0px;

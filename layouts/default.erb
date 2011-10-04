@@ -1,178 +1,52 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="/css/blog.css" type="text/css" />
-    <link rel="stylesheet" href="/css/minimalist-grey.css" type="text/css" />
-    <link rel="stylesheet" href="/css/coderay.css" type="text/css" />
-    <link rel="stylesheet" href="/css/zzz.css" type="text/css" />
-
-    <title><%= item[:title] %></title>
-</head>
-<body id="mt-blog" class="mt-entry-archive layout-wtt">
-    <div id="container">
-        <div id="container-inner">
-
-            <div id="header">
-              <div id="header-inner">
-                <div id="header-content">
-
-                  <div id="header-name"><a href="/" accesskey="1">Lobotomy Team</a></div>
-                  <div id="header-description"></div>
-
-                </div>
-
-              </div>
-              <div id="header-logo1"></div>
-              <div id="header-logo2"></div>
-            </div>
-
-
-            <div id="content">
-                <div id="content-inner">
-
-
-                    <div id="alpha">
-                        <div id="alpha-inner">
-
-                            <div class="entry-asset asset hentry">
-                          <% if item[:title] %>
-                                <div class="asset-header">
-                                  <h1 id="page-title" class="asset-name entry-title"><%= item[:title] %></h1>
-                                  <div class="asset-meta">
-                                  <% if item[:author] && item[:created_at] %>
-                                        <span class="byline">
-
-                                        By <span class="vcard author"><a class="fn url" href="<%= item[:author_url] %>"><%=  item[:author] %></a></span> on <abbr class="published"><%= item[:created_at] %></abbr>
-
-                                        </span>
-                                  <% end %>
-                                  </div>
-                                </div>
-                          <% end %>
-                                <div class="asset-content entry-content">
-
-                                    <div class="asset-body">
-                                      <%= yield %>
-                                    </div>
-
-
-                                </div>
-                                <div class="asset-footer">
-
-                                    <!--div class="entry-tags">
-                                        <h4>Tags<span class="delimiter">:</span></h4>
-                                        <ul>
-                                            <li></li>
-                                        </ul>
-                                    </div-->
-
-                                </div>
-                            </div>
-
-                    <!--div id="trackbacks" class="trackbacks">
-                        <h2 class="trackbacks-header">No TrackBacks</h2>
-
-                        <div class="trackbacks-info">
-                            <p>TrackBack URL: </p>
-                        </div>
-                    </div-->
-
-
-                    <div id="comments" class="comments"> </div>
-
-
-
-
-                        </div>
-                    </div>
-
-
-                    <div id="beta">
-    <div id="beta-inner">
-
-
-
-    <!--div class="widget-archive widget-archive-category widget">
-        <h3 class="widget-header">Categories</h3>
-        <div class="widget-content">
-            <ul><li> widget contents here </li></ul>
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title><%= @item[:title].to_s.strip.empty? ? '' : (@item[:title].to_s + " - ") %>Lobotomy</title>
+    <link rel="stylesheet" href="/resource/reset.css" />
+    <link rel="stylesheet" href="/resource/site.css" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <script src="/resource/zepto.js"></script>
+    <script src="/resource/site_js.js"></script>
+  </head>
+  <body>
+    <header id="mast">
+      <div class="content">
+        <section id="identity" >
+          <div id="avatar">
+            <div id="logo1"></div>
+          </div>
+          <div><a href="/">Lobotomy Team</a></div>
+          <!--div>Some slogan here</div-->
+        </section>
+        <nav>
+          <ul>
+            <li><a href="/" class="button" data-icon="H">Home</a></li>
+            <li><a href="/about" class="button" data-icon="i">About us</a></li>
+            <li><a href="/howto" class="button" data-icon="x">HOWTO</a></li>
+            <!--li><a href="http://twitter.com/metaskills" class="button" data-icon="B">Follow</a></li-->
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <section id="page">
+      <section id="content">
+        <%= yield %>
+      </section>
+      <nav>
+        <div>
+          <!--a href="http://www.youtube.com/watch?v=8pBTK-pdMP0">Society for coding things on top  of other things!</a-->
         </div>
-    </div>
-
-
-    <div class="widget-archive-monthly widget-archive widget">
-        <h3 class="widget-header">Monthly <a href="../../archives.html">Archives</a></h3>
-        <div class="widget-content">
-            <ul>
-                <li><a href="index.html">September 2011</a></li>
-            </ul>
-        </div>
-    </div-->
-
-
-    <div class="widget-pages widget">
-        <h3 class="widget-header">Pages</h3>
-        <div class="widget-content">
-            <ul>
-                <li class="page"><a href="/about">About us</a></li>
-                <li class="page"><a href="/howto">Lobotomy HOWTO</a></li>
-            </ul>
-        </div>
-    </div>
-
-
-    </div>
-</div>
-
-
-
-
-<!--div id="gamma">
-    <div id="gamma-inner">
-        <div class="widget-search widget">
-            <h3 class="widget-header">Search</h3>
-            <div class="widget-content">
-                <form method="get" action="/search">
-                    <input type="text" id="search" class="ti" name="search" value="" />
-
-                    <input type="hidden" name="IncludeBlogs" value="1" />
-
-                    <input type="hidden" name="limit" value="20" />
-                    <input type="submit" accesskey="4" value="Search" />
-                </form>
-            </div>
-        </div>
-
-        <div class="widget-about-this-page widget">
-            <h3 class="widget-header">About this Entry</h3>
-            <div class="widget-content"></div>
-        </div>
-    </div>
-</div-->
-
-
-
-
-
-                </div>
-            </div>
-
-
-            <div id="footer">
-                <div id="footer-inner">
-                    <div id="footer-content">
-                        <div class="widget-powered widget">
-                            <div class="widget-content">
-                                Powered by <a href="/" rel="generator">Handz &amp; Brainz</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</body>
+        <h3>Categories</h3>
+        <ul>
+          <li><a href="/writeups">Writeups</a></li>
+          <li><a href="/achievements">Achievements</a></li>
+          <li><a href="/howto">HOWTO</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+    </section>
+    <footer id="foot">
+  	</footer>
+  </body>
 </html>

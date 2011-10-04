@@ -11,7 +11,7 @@ end
 namespace :gems do
   desc "install required gems"
   task :install do
-    system "gem install nanoc3 RedCloth coderay"
+    system "gem install nanoc3 RedCloth coderay systemu"
   end
 end
 
@@ -61,3 +61,11 @@ namespace :posts do
   end
 end
 
+task :sass do
+  infile = "_sass/site.scss"
+  outfile = "content/resource/site.css"
+  data = '@charset "UTF-8";'
+  data << `sass --scss #{infile} --style compressed`
+  data.gsub!(' px','px ') # fix weird sass bug
+  File.open(outfile,'w'){ |f| f << data }
+end
