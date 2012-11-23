@@ -6,3 +6,4 @@ tmp/*
 *.orig
 *.local
 .sass-cache
+*.log
