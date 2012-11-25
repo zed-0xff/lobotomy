@@ -1,0 +1,53 @@
+--- 
+title: RuCTFE 2012 - Flybook
+author: alter
+categories:
+- writeup
+---
+<h1>Write-up Flybook</h1>
+
+<h3>Whereis flags ?</h3>
+egrep -R -e '\w{31}=' /var/www/<br/>
+And we see that they in /var/www/db/sessions<br/>
+<br/>
+<h3>How to get flags ?</h3>
+curl http://ip/db/sessions<br/>
+really easy ? =)<br/>
+<br/>
+<h3>Now we should make patch:</h3>
+
+Lets look at lib/db.php - it's obfuscated.<br/>
+This is simple obfuscation, we could deobfuscate this code very quickly.<br/>
+<ul>
+<li>make this code readable - I like to use "Sublime Text 2" and this code got readable form in 2 minutes. </li>
+<li>we see that we have 3 part of php code.</li>
+<ul>
+<li>In the first part make: <code>print_r($GLOBALS['_1392131239_']);</code><br/>
+and replace all <code>$GLOBALS['_1392131239_'][x]</code> from the 3rd part to the equals from printed array.</li>
+<li>In the second part make:
+<pre><code>for($i=0;$i&lt30;$i++)
+	echo base64_decode($a[$i]);
+</code></pre><br/>
+and make replace of _1092662562(x) from the 3rd part to the printed equals.</li>
+</ul>
+</ul>
+
+<h4>What can we see here ?</h4>
+Right, path to db:
+<pre><code>
+function dbname($x_0){
+	return 'db/' .substr($x_0,round(0),-round(0+5));
+}
+</code></pre>
+
+<b>uuid</b><br/>
+<i>26362220-36ec-11e2-a216-0016e6846163</i><br/>
+<br/>
+<b>cp -R /var/ww/db /var/www/26362220-36ec-11e2-a216-0016e6846163</b><br/><br/>
+and fix db.php
+<pre><code>
+function dbname($x_0){
+	return '26362220-36ec-11e2-a216-0016e6846163/' .substr($x_0,round(0),-round(0+5));
+}
+</code></pre>
+
