@@ -1,0 +1,49 @@
+--- 
+title: RuCTFE 2012 - Buster(Patch)
+author: alter
+categories: 
+- writeup
+---
+<h1>Buster Write-up</h1>
+<h3>I made patch only</h3>
+Take buster.jar<br/>
+Unzip buster.jar<br/>
+Download jd-gui for decompile java classes<br/>
+Look at the code of server.<br/>
+File buster/server/data/base.java contains next code:
+<pre><code>
+Statement stat = conf.conn.createStatement();
+stat.executeUpdate("insert into users (name, password) values('" + name + "', '" + password + "');");
+</code></pre>
+and
+<pre><code>
+Statement stat = conf.conn.createStatement();
+ResultSet rs = stat.executeQuery("select * from users where name='" + name + "'and password='" + password + "';");
+</code></pre>
+As far as you can see there is SQL injection.<br/>
+Java preparedstatement should save us<br/> 
+Change insert code to:<br/>
+<pre><code>
+String query = "insert into users (name, password) values(?,?);";
+stat = conf.conn.prepareStatement(query);
+stat.setString(1, name);
+stat.setString(2, password);
+stat.executeUpdate();
+stat.close();
+</code></pre>
+<br/>
+Change select code to:<br/>
+<pre><code>
+String query = "select * from users where name = ? and password = ?;";
+stat = conf.conn.prepareStatement(query);
+stat.setString(1, name);
+stat.setString(2, password);
+ResultSet rs = stat.executeQuery(query);
+</code></pre>
+Compile class:<br/>
+javac buster/server/data/base.class<br/>
+<br/>
+Update buster.jar<br/>
+jar -uf buster.jar buster/server/data/base.class<br/>
+<br/>
+restart service<br/>
