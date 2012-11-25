@@ -11,29 +11,28 @@
   sh install_gems.sh
   apt-get install pygments
 </pre>
-3. pygments - это библиотека раскраски тэгов &lt;code&gt;, есть в портах/пакетах любого *nix дистра, ставить средствами дистра
+3. [pygments](http://pygments.org/) - это библиотека раскраски тэгов &lt;code&gt;, есть в портах/пакетах любого *nix дистра, ставить средствами дистра
 
-Преимущества
-============
+
+Пишем врайтап
+=============
+1. `rake writeups:new`
+2. Программа спросит <tt>Writeup title</tt> и <tt>Writeup format ([md](http://daringfireball.net/projects/markdown/syntax),[textile](http://www.textism.com/tools/textile/),html,[erb](http://en.wikipedia.org/wiki/ERuby),[haml](http://haml.info/)) (default: md)</tt>
+3. Программа запустит ваш любимый `$EDITOR` со свежесозданным файлом
+4. Пишем врайтап
+5. `rake compile` (или просто `rake`)
+6. Радуемся что нет ошибок и проверяем в каталоге `output` что получилось
+7. `rake deploy` - деплоим на вебсервер, на вебсервере должен уже быть ваш SSH паблик кей, иначе ничего не выйдет
+
+---
+
+### Преимущества платформы
 
 1. Легкость
 2. Отсутствие привязки к какой-либо платформе или фреймворку
 3. Надежность хранения статей
 
----
-
-* сайт статический
-* платформа [nanoc](http://nanoc.stoneship.org/docs/1-introduction/)
-* выкатывается по ssh ключам
-* `rake posts:new` - создание нового поста (по дефолту в markdown, но можно переименовать ручками в textile/erb/html)
-* `rake deploy` - выкатывание сайта на сервер
-* `rake server` - запустить локальный сервер на 3000 порту
-* `rake` - скомпилировать контент из `/content` в html в `/output`
-* для раскраски кода **на клиенте** нужно установить [pygments](http://pygments.org/) 
-
-
-Credits
-========
+### Credits
 
 * http://nanoc.stoneship.org/
 * thanks to http://metaskills.net/ for design
