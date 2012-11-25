@@ -8,11 +8,8 @@
 <pre>
   git clone git@github.com:zed-0xff/lobotomy.git
   cd lobotomy
-  sh install_gems.sh
-  apt-get install pygments
+  sh install.sh
 </pre>
-3. [pygments](http://pygments.org/) - это библиотека раскраски тэгов &lt;code&gt;, есть в портах/пакетах любого *nix дистра, ставить средствами дистра
-
 
 Пишем врайтап
 =============
@@ -31,6 +28,7 @@
 ### Примечания
 
 * Для проверки можно запустить локальный `rake server` на порту 3000
+* [pygments](http://pygments.org/) - это библиотека раскраски тэгов &lt;code&gt;, есть в портах/пакетах любого *nix дистра, ставить средствами дистра
 
 ---
 

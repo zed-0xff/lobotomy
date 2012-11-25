@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'nanoc3/tasks'
 
 task :default => :compile
@@ -6,13 +7,6 @@ desc "compile site"
 task :compile do
   require 'nanoc3/cli'
   Nanoc3::CLI.run ["compile"]
-end
-
-namespace :gems do
-  desc "install required gems"
-  task :install do
-    system "gem install nanoc3 RedCloth coderay systemu haml"
-  end
 end
 
 desc "run a local server"
