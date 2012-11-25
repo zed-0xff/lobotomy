@@ -27,37 +27,62 @@ task :deploy => :compile do
   system "rsync -avz output/ lobotomy.me:/vz/private-names/web/var/www/lobotomy.me"
 end
 
-namespace :posts do
-  desc "Create a new blog post"
-  task :new do
-    require 'yaml'
+def new_post type = 'Post', params = {}
+  require 'yaml'
 
-    title = ENV['title'] ||
-      begin
-        print "Post title: "
-        $stdin.gets.chomp.strip
-      end
-
-    format = ENV['format'] ||
-      begin
-        print "Post format (md,textile,html,erb) (default: md) : "
-        $stdin.gets.chomp.strip
-      end
-
-    date = ENV['date'] ? Time.parse(ENV['date']) : Time.now
-
-    format.strip!
-    format = 'md' if format.empty?
-    name = title.gsub(/\s+/, '-')
-    name = name.gsub(/[^a-zA-Z0-9_-]/, "").downcase
-    time = date.strftime("%Y-%m-%d")
-    fname = "content/#{time}-#{name}.#{format}"
-    raise "#{fname} already exists!" if File.exist?(fname)
-    File.open(fname, "w+") do |file|
-      file.puts({'title' => title, 'author' => ENV['USER']}.to_yaml + "---")
+  title = ENV['title'] ||
+    begin
+      print "[.] #{type} title: "
+      $stdin.gets.chomp.strip
     end
-    puts "Created #{fname}"
-    system ENV['EDITOR'], fname
+
+  format = ENV['format'] ||
+    begin
+      print "[.] #{type} format (md,textile,html,erb) (default: md) : "
+      $stdin.gets.chomp.strip
+    end
+
+  date = ENV['date'] ? Time.parse(ENV['date']) : Time.now
+
+  format.strip!
+  format = 'md' if format.empty?
+  name = title.gsub(/\s+/, '-')
+  name = name.gsub(/[^a-zA-Z0-9_-]/, "").downcase
+  time = date.strftime("%Y-%m-%d")
+  fname = "content/#{time}-#{name}.#{format}"
+  raise "#{fname} already exists!" if File.exist?(fname)
+  File.open(fname, "w+") do |f|
+    f << {'title' => title, 'author' => ENV['USER']}.merge(params).to_yaml
+    f << "---\n\n"
+  end
+  puts "[=] Created #{fname}"
+  fname
+end
+
+def launch_editor fname
+  editor = ENV['EDITOR']
+  case editor
+  when nil,''
+    puts "[!] no EDITOR env variable set! please edit #{fname} manually"
+  when /vim/
+    # place cursor on last line in vim
+    system editor, fname, "+99"
+  else
+    system editor, fname
+  end
+end
+
+namespace :posts do
+  desc "Create new post"
+  task :new do
+    launch_editor new_post
+  end
+end
+
+namespace :writeups do
+  desc "Create new writeup"
+  task :new do
+    launch_editor new_post('Writeup', 'categories' => ['writeup'])
   end
 end
 
