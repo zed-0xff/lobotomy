@@ -39,7 +39,7 @@ elif [ -f /etc/lsb-release -a -x /usr/bin/apt-get ]; then
 else
 	echo "[?] could not detect distro"
         echo
-        if ! command -v pygme1ntize >/dev/null 2>&1; then
+        if ! command -v pygmentize >/dev/null 2>&1; then
             # 'pygmentize' command absent
             echo "Please install 'pygments' app from your distro repository for syntax hilite"
         fi
