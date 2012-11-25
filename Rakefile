@@ -11,7 +11,7 @@ end
 namespace :gems do
   desc "install required gems"
   task :install do
-    system "gem install nanoc3 RedCloth coderay systemu"
+    system "gem install nanoc3 RedCloth coderay systemu haml"
   end
 end
 
@@ -38,7 +38,7 @@ def new_post type = 'Post', params = {}
 
   format = ENV['format'] ||
     begin
-      print "[.] #{type} format (md,textile,html,erb) (default: md) : "
+      print "[.] #{type} format (md,textile,html,erb,haml) (default: md) : "
       $stdin.gets.chomp.strip
     end
 
