@@ -16,6 +16,7 @@
 
 Пишем врайтап
 =============
+0. `git pull` чтобы подтянуть все что обновилось в репе
 1. `rake writeups:new`
 2. Программа спросит <tt>Writeup title</tt> и <tt>Writeup format ([md](http://daringfireball.net/projects/markdown/syntax),[textile](http://www.textism.com/tools/textile/),html,[erb](http://en.wikipedia.org/wiki/ERuby),[haml](http://haml.info/)) (default: md)</tt>
 3. Программа запустит ваш любимый `$EDITOR` со свежесозданным файлом
@@ -23,6 +24,13 @@
 5. `rake compile` (или просто `rake`)
 6. Радуемся что нет ошибок и проверяем в каталоге `output` что получилось
 7. `rake deploy` - деплоим на вебсервер, на вебсервере должен уже быть ваш SSH паблик кей, иначе ничего не выйдет
+8. `git commit`, тщательно выбираем что коммитить, `git push`
+
+---
+
+### Примечания
+
+* Для проверки можно запустить локальный `rake server` на порту 3000
 
 ---
 
