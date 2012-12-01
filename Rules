@@ -17,7 +17,7 @@ preprocess do
   prepare_nested_layouts layouts
   members = YAML::load_file 'members.yml'
   @items.each do |item|
-    if item.identifier =~ /^\/\d{4}-\d{2}-\d{2}-/
+    if item.level == 0 && item.identifier =~ /^\/\d{4}-\d{2}-\d{2}-/
       item[:kind] = 'article' 
       item[:created_at] = Time.parse(item.identifier[/\d{4}-\d{2}-\d{2}/])
       if item[:author] && members[item[:author]]

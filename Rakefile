@@ -43,13 +43,18 @@ def new_post type = 'Post', params = {}
   name = title.gsub(/\s+/, '-')
   name = name.gsub(/[^a-zA-Z0-9_-]/, "").downcase
   time = date.strftime("%Y-%m-%d")
-  fname = "content/#{time}-#{name}.#{format}"
+
+  dir = "content/#{time}-#{name}"
+  Dir.mkdir(dir) unless Dir.exist?(dir)
+
+  fname = "#{dir}/index.#{format}"
   raise "#{fname} already exists!" if File.exist?(fname)
   File.open(fname, "w+") do |f|
     f << {'title' => title, 'author' => ENV['USER']}.merge(params).to_yaml
     f << "---\n\n"
   end
   puts "[=] Created #{fname}"
+  puts "[.] Place this post assets (images, binaries, etc) in #{dir}/"
   fname
 end
 
@@ -70,6 +75,17 @@ namespace :posts do
   desc "Create new post"
   task :new do
     launch_editor new_post
+  end
+
+  task :move2dirs do
+    require 'fileutils'
+    Dir['content/????-??-??-*.*'].each do |fname|
+      a = fname.split('.')
+      raise unless a.size == 2
+      dir,ext = a
+      Dir.mkdir dir
+      FileUtils.mv fname, File.join(dir, "index.#{ext}")
+    end
   end
 end
 

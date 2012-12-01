@@ -5,5 +5,5 @@ categories:
   - achievement
 ---
 
-[![Lobotomy @ 3rd place](/yaroot2012.png)](http://root.yandex.ru/var/log/game.log)
+[![Lobotomy @ 3rd place](yaroot2012.png)](http://root.yandex.ru/var/log/game.log)
 
