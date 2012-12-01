@@ -15,5 +15,9 @@ module Nanoc3
         identifier['place/']
       end
     end
+
+    def level
+      identifier[1..-2].count('/')
+    end
   end
 end
