@@ -1,0 +1,89 @@
+---
+title: RWTH CTF 2012 - Azure Coast - writeup part2
+author: zed
+categories:
+- writeup
+---
+
+%style
+  img.clickable { cursor: pointer }
+
+%a(href="/2012-12-01-rwth-ctf-2012---azure-coast---writeup-part1/") first part
+
+%h2 0. traffic dump
+
+%p
+  %img(src="05.png" alt="traffic dump")
+  %br
+  (
+  %a(href="stream5.pcap") stream5.pcap
+  )
+
+client says:
+%pre
+  %code
+    :escaped
+      CHK <filename> <some binary garbage>
+
+and server responds with:
+%pre
+  %code
+    HASH: 896314594
+
+%img.clickable(src="obvious.png" align="right" width="100")
+%h2 1. "HASH" is a some sort of hash.
+
+:javascript
+  $("img.clickable").click(function(){
+    $(this).attr("width",$(this).attr("width") == 100 ? "" : 100);
+  });
+
+%p
+  I tried very hard to reverse that, but time was limited and I not wanted
+  very much to learn some new artificial assembler nor understanding the VM
+  code.
+
+%p
+  I took one sample file and generated a lot of it's clones, but they all had
+  ONE byte different from original file. And then launched a script with a lot 
+  of <code>CHK</code> commands with different binary garbage.
+
+%h2 2. Guess what?!
+
+%p
+  "CHK" command returns hash of random 4 bytes of flag-file. The very first of 
+  "garbage" bytes is actually an index that determines which 4 bytes we want to get.
+  2nd and next "garbage" bytes only change the hash value, but not the index of
+  bytes it is calculated from.
+
+%p
+  It is not necessary to reverse the hash calculation algorithm b/c every 4 bytes of
+  flag-file actually contains one ASCII letter (something like UTF-32) and hash value
+  is not depend on block index but only on block value.
+
+%p
+  So I enumerated all characters from range 0x20..0x7f and calculated hashes for them
+  using local server and modifying local flag-file. The only tricky part was 10-th
+  character which mapped to <code>0x0A</code> AKA LINEFEED which was a line terminator
+  and caused the server to stop reading data. Solution was simple - as all client-server
+  communication in UTF-32, we just send a <code>0A 01 00 00</code> instead of 
+  <code>0A 00 00 00</code> - and it was a valid index, not causing linefeed.
+
+%h2 3. Conclusion
+
+%p
+  %ol
+    %li connect to target
+    %li 
+      %a(href="/2012-12-01-rwth-ctf-2012---azure-coast---writeup-part1/") pass a challenge-response auth
+    %li list files with "LST" command
+    %li
+      for each file:
+      %ol(style="margin-left: 1em")
+        %li issue 16 "CHK" commands (one per each letter of flag)
+        %li restore each hash back to letter
+
+%br
+%br
+
+%a(href="https://github.com/zed-0xff/ctf/tree/master/2012.rwth/azurecoast") all files for this task
