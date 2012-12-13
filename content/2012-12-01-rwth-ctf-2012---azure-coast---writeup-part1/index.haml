@@ -1,0 +1,172 @@
+---
+title: RWTH CTF 2012 - Azure Coast - writeup part1
+author: zed
+categories:
+- writeup
+---
+
+%style
+  img.clickable { cursor: pointer }
+
+%h2 0. traffic dumps
+
+look at the following traffic dumps (images are clickable):
+%br
+they show a conversation between service (blue) and checking system (green)
+
+%p
+  %img.clickable(src="01.png" width="500" alt="traffic dump #1")
+  %img.clickable(src="02.png" width="500" alt="traffic dump #2")
+%p
+  You can download original PCAPs if you want:
+  %a(href="stream1.pcap") stream1.pcap
+  ,
+  %a(href="stream2.pcap") stream2.pcap
+
+:javascript
+  $("img.clickable").click(function(){
+    $(this).attr("width",$(this).attr("width") == 500 ? "" : 500);
+  });
+
+%p
+  You can see that every conversation begins with four bytes of data server sends to client
+  and then client answers with different four bytes.
+
+
+
+%h2 1. challenge &amp; response
+
+%p
+  Start with writing small script that reads data from server and writes something back:
+
+%pre
+  %code
+    :plain
+      #!ruby
+      socket = TCPSocket.new @host, TARGET_PORT
+      chal = socket.read(4).unpack('L')[0]
+      printf " in: %08x %10d\n", chal&0xffffffff, chal
+
+      resp = 0x11223344
+
+      outdata = [resp].pack('L')
+      data = outdata.unpack('L')[0]
+      printf "out: %08x %10d\n", data&0xffffffff, data
+
+      socket.write outdata
+
+output:
+
+%pre
+  %code
+    :plain
+      #   in: e50a481c 3842656284
+      #  out: 11223344  287454020
+
+now edit provided sources, uncomment some commented debug output and add more debug output, like:
+
+%pre
+  %code
+    :plain
+      #!diff
+      diff -ur azurecoast_orig/service_source/service/go/src/rwthctfvm/cpu/cpu.go azurecoast/service_source/service/go/src/rwthctfvm/cpu/cpu.go
+      --- azurecoast_orig/service_source/service/go/src/rwthctfvm/cpu/cpu.go	2012-12-14 00:24:07.277183829 +0400
+      +++ azurecoast/service_source/service/go/src/rwthctfvm/cpu/cpu.go	2012-12-01 00:47:51.611877564 +0400
+      @@ -159,12 +159,13 @@
+              if c.Step { getKey() }
+              ipval,err := c.GetRegister(ip)
+              //fmt.Println("fetching "+hex(ipval))
+      +	fmt.Print(hex(ipval) + ": ")
+              if err != nil {return errors.New("unable to get ip") }
+              instrval, err := c.GetMemory(ipval)
+              if err != nil {return errors.New("unable to get cmd") }
+              instr, err := c.GetInstr(instrval)
+              if err != nil {return errors.New("unable to decode instr") }
+      -	//fmt.Println(instr.Inspect())
+      +	fmt.Println(instr.Inspect())
+              if c.Step {
+                      fmt.Print("IP: "+c.InspectIP())
+                      fmt.Println(instr.Inspect())
+      @@ -287,9 +288,9 @@
+                                      i := int(bytes[0])
+       
+                                      if i!=0x0a { //don't print newlines
+      -				//c.Log("readb from",arg1,"read", hex(int(i)), string(i), "ok:", num)
+      +				c.Log("readb from",arg1,"read", hex(int(i)), string(i), "ok:", num)
+                                      } else {
+      -				//c.Log("readb from",arg1,"read", hex(int(i)), "ok:", num)
+      +				c.Log("readb from",arg1,"read", hex(int(i)), "ok:", num)
+                                      }
+                                      c.SetRegister(t1,num)
+                                      c.SetRegister(t0,i)
+
+( <a href="dbg.diff">get a full diff</a> )
+
+%p
+  that will provide us with nice detailed execution logs like
+
+%pre
+  %code
+    :escaped
+      #!c
+      0x0: <ldw t0(0x0) 0x0 >
+      0x2: <ldw t6(0x0) 0x0 >
+      0x4: <jmp t6(0x2ce) 0x0 >
+      0x2ce: <mov t4(0x0) t0(0x5) >
+      0x2cf: <sys 0x9 0x0 >
+      0x2d0: <mov t2(0x0) t0(0x1f9c) >
+      0x2d1: <sub t2(0x1f9c) t1(0x9e2) >
+
+( <a href="step1.log">a full log of step 1</a> )
+
+%p
+  Now remember that we got a <code style="color:red">0xe50a481c</code> challenge value.
+  %br
+  and responded with <code style="color:green">0x11223344</code>
+  %br
+  So, let's grep it out of the execution log!
+
+%pre
+  %code
+    :plain
+      0x351: &lt;jmp t6(0x3d1) 0x0 &gt;
+      0x3d1: &lt;mov t0(0x2410f8a0) t1(0xffffffff<font color=red>e50a481c</font>) &gt;
+      0x3d2: &lt;sys 0x4 0x1 &gt;
+      0x3d3: &lt;ldw t1(0xffffffff<font color=red>e50a481c</font>) 0x0 &gt;
+      0x3d5: &lt;xor t0(0xffffffff<font color=red>e50a481c</font>) t1(0xffffffffa7f7e284) &gt;
+      [.] R=<font color=yellow>0x42fdaa98</font>
+
+      0x3d6: &lt;mul t0(<font color=yellow>0x42fdaa98</font>) t0(<font color=yellow>0x42fdaa98</font>) &gt;
+      [.] R=<font color=cyan>0x21e3a40</font>
+      0x3d7: &lt;ldw t1(0xffffffffa7f7e284) 0x0 &gt;
+      0x3d9: &lt;add t0(<font color=cyan>0x21e3a40</font>) t1(0xffffffffa82d3274) &gt;
+      [.] R=0xffffffff<font color=magenta>aa4b6cb4</font>
+
+      0x3da: &lt;mov t2(0x2410f8a0) t0(0xffffffff<font color=magenta>aa4b6cb4</font>) &gt;
+      0x3db: &lt;sys 0x3 0x0 &gt;
+      0x3dc: &lt;cmp t0(<font color=green>0x11223344</font>) t2(0xffffffff<font color=magenta>aa4b6cb4</font>) &gt;
+
+%p Yay! Better than I expected! XOR, then MUL, then ADD.
+
+%h2 2. We're in!
+
+%p So, final challenge-response code is:
+
+%pre
+  %code
+    :plain
+      #!ruby
+      socket = TCPSocket.new @host, TARGET_PORT
+      chal = socket.read(4).unpack('L')[0]
+      printf " in: %08x %10d\n", chal&0xffffffff, chal
+
+      resp = (chal^0xa7f7e284)**2 + 0xa82d3274
+
+      outdata = [resp].pack('L')
+      data = outdata.unpack('L')[0]
+      printf "out: %08x %10d\n", data&0xffffffff, data
+
+      socket.write outdata
+
+%p
+  %a(href="/2012-12-01-rwth-ctf-2012---azure-coast---writeup-part2/") part 2
