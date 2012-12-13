@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # required gems
-GEMS="nanoc3 RedCloth coderay systemu kramdown haml nokogiri"
+GEMS="nanoc3 RedCloth coderay systemu kramdown haml nokogiri adsf"
 
 # common packages to install in all distros
 PKGS=
