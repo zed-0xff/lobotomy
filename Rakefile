@@ -18,7 +18,7 @@ end
 desc "deploy to server"
 task :deploy => :compile do
 #  system "scp -r output/* zed.0xff.me:/apps/lobotomy/"
-  system "rsync -avz --progress -e "ssh -p222" output/ root@lobotomy.me:/var/www/lobotomy.me"
+  system "rsync -avz --progress -e 'ssh -p222' output/ root@lobotomy.me:/var/www/lobotomy.me"
 end
 
 def new_post type = 'Post', params = {}
