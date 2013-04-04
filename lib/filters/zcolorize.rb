@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 class ZColorize < Nanoc3::Filters::ColorizeSyntax
   identifier :zcolorize
 
