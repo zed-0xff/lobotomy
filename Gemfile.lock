@@ -1,0 +1,39 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    RedCloth (4.3.2)
+    adsf (1.4.3)
+      rack (>= 1.0.0, < 3.0.0)
+    coderay (1.1.2)
+    cri (2.15.10)
+    haml (5.1.2)
+      temple (>= 0.8.0)
+      tilt
+    kramdown (2.1.0)
+    mini_portile2 (2.4.0)
+    nanoc3 (3.2.4)
+      cri (~> 2.0)
+    nokogiri (1.10.7)
+      mini_portile2 (~> 2.4.0)
+    rack (2.1.1)
+    rake (13.0.1)
+    systemu (2.6.5)
+    temple (0.8.2)
+    tilt (2.0.10)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  RedCloth
+  adsf
+  coderay
+  haml
+  kramdown
+  nanoc3 (= 3.2.4)
+  nokogiri
+  rake
+  systemu
+
+BUNDLED WITH
+   2.1.4
