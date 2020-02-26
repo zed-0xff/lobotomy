@@ -13,7 +13,7 @@ GEM
     mini_portile2 (2.4.0)
     nanoc3 (3.2.4)
       cri (~> 2.0)
-    nokogiri (1.10.7)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
     rack (2.1.1)
     rake (13.0.1)
